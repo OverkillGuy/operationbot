@@ -44,7 +44,7 @@ class Event(BaseModel):
     port: int
     mods: str
     message_id: DiscordID = Field(alias="messageID", description="The Discord Message ID")
-    platoon_size: Literal["1PLT"]
+    platoon_size: Literal["1PLT", "2PLT", "sideop", "WW2side"]
     sideop: bool
     attendees: dict  # TODO Get specific
     role_groups: RoleGroups = Field(alias="roleGroups")
