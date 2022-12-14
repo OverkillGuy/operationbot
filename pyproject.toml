@@ -15,13 +15,16 @@ python = "^3.9"
 "discord.py" = ">=1.3.4,<2.0.0"
 # Yaml parser
 pyyaml = "*"
-
+# JSON-serializable content
+pydantic = "^1.10.2"
 
 # Note: Linters not defined in this file but .pre-commit-config.yaml, which
 # installs/manages each tool in its own isolated virtualenv
 
 [tool.poetry.group.test.dependencies]
 pytest = "7.*"
+# Shared test data directory
+pytest-datadir = "*"
 # Test coverage
 pytest-cov = "3.*"
 # Clearer assertion failures (colorful diff)
