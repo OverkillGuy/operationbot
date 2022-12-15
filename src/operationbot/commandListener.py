@@ -25,15 +25,14 @@ from operationbot.eventDatabase import EventDatabase
 from operationbot.bot import OperationBot
 from operationbot.role import Role
 from operationbot.roleGroup import RoleGroup
-from operationbot.secret import ADMINS
-from operationbot.secret import COMMAND_CHAR as CMD
-from operationbot.secret import WW2_MODS
 
 
 class CommandListener(Cog):
 
     def __init__(self, bot: OperationBot):
         self.bot = bot
+        self.secrets = bot.secrets
+        self.cmd = self.secrets.cmd
 
         @bot.check
         async def globally_block_dms(ctx: Context):
@@ -121,7 +120,7 @@ class CommandListener(Cog):
         Example: exec p variable
         """
         # Allow only specified admins to send commands for security reasons
-        if ctx.message.author.id not in ADMINS:
+        if ctx.message.author.id not in self.secrets.admins:
             await ctx.send("Unauthorized")
             return
 
@@ -299,8 +298,8 @@ class CommandListener(Cog):
         event = await self._create_quick(ctx, _datetime, terrain, faction,
                                          zeus, _time, sideop=True,
                                          platoon_size="WW2side")
-        if WW2_MODS:
-            await self._set_mods(ctx, event, WW2_MODS)
+        if self.secrets.ww2_mods:
+            await self._set_mods(ctx, event, self.secrets.ww2_mods)
 
     @command(aliases=['mc'])
     async def multicreate(self, ctx: Context, start: ArgDate,
@@ -354,7 +353,7 @@ class CommandListener(Cog):
             message = (
                 f"No events to be created.{strpast}"
                 "Use the `force` argument to override. "
-                f"See `{CMD}help multicreate`")
+                f"See `{self.cmd}help multicreate`")
             await ctx.send(message)
             return
 
@@ -1050,20 +1049,19 @@ class CommandListener(Cog):
 
     # TODO: Test commands
     @Cog.listener()
-    @staticmethod
-    async def on_command_error(ctx: Context, error: Exception):
+    async def on_command_error(self, ctx: Context, error: Exception):
         # pylint: disable=no-else-return
         if isinstance(error, MissingRequiredArgument):
-            await ctx.send(f"Missing argument. See: `{CMD}help {ctx.command}`")
+            await ctx.send(f"Missing argument. See: `{self.cmd}help {ctx.command}`")
             return
         elif isinstance(error, BadArgument):
             await ctx.send(f"Invalid argument: {error}. "
-                           f"See: `{CMD}help {ctx.command}`")
+                           f"See: `{self.cmd}help {ctx.command}`")
             return
         elif isinstance(error, CommandInvokeError):
             if isinstance(error.original, UnexpectedRole):
                 await ctx.send(f"Malformed data: {error.original}. "
-                               f"See: `{CMD}help {ctx.command}`")
+                               f"See: `{self.cmd}help {ctx.command}`")
                 return
             elif isinstance(error.original, RoleError):
                 await ctx.send(f"An error occured: ```{error.original}```\n"

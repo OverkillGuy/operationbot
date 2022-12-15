@@ -10,7 +10,6 @@ from operationbot.config import EMBED_COLOR
 from operationbot.errors import RoleError, RoleGroupNotFound, RoleNotFound, RoleTaken
 from operationbot.role import Role
 from operationbot.roleGroup import RoleGroup
-from operationbot.secret import PLATOON_SIZE
 
 TITLE = "Operation"
 SIDEOP_TITLE = "Side Operation"
@@ -21,6 +20,11 @@ MODS = ""
 # Discord API limitation
 MAX_REACTIONS = 20
 
+
+# Used to be from secret.py. Ideally would be injected inside Event class where
+# needed, but it's not REALLY a secret, more a default var, and impending
+# refactor of Event makes it not worth dependency-injecting it.
+PLATOON_SIZE="1PLT"
 
 class User:
     # This class implements the same signature as the discord.abc.User class,
